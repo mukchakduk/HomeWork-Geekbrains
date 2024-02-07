@@ -1,0 +1,196 @@
+"""
+Создать программно файл в текстовом формате, записать в него построчно данные, вводимые пользователем. Об окончании ввода данных свидетельствует пустая строка.
+"""
+
+def write_user_input_to_file(filename):
+    with open(filename, 'w') as file:
+        while True:
+            user_input = input("Введите текст (оставьте строку пустой и нажмите Enter для завершения): ")
+            if user_input == "":
+                break
+            file.write(user_input + '\n')
+
+# Вызов функции для записи в файл
+filename = "user_input.txt"
+write_user_input_to_file(filename)
+
+"""
+
+2. Создать текстовый файл (не программно), сохранить в нем несколько строк, выполнить подсчет количества строк, количества слов в каждой строке.
+"""
+filename = "example.txt"  # Замените на имя вашего файла
+
+try:
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+        print(f"Количество строк в файле: {len(lines)}")
+        for i, line in enumerate(lines, 1):
+            words_count = len(line.split())
+            print(f"Строка {i} содержит {words_count} слов(а).")
+except FileNotFoundError:
+    print(f"Файл {filename} не найден.")
+
+"""
+3. Создать текстовый файл (не программно), построчно записать фамилии сотрудников и величину их окладов. Определить, кто из сотрудников имеет оклад менее 20 тыс., вывести фамилии этих сотрудников. Выполнить подсчет средней величины дохода сотрудников.
+"""
+filename = "salaries.txt"
+
+try:
+    with open(filename, 'r') as file:
+        total_income = 0
+        employee_count = 0
+        low_salary_employees = []
+        for line in file:
+            name, salary = line.split()
+            salary = int(salary)
+            if salary < 20000:
+                low_salary_employees.append(name)
+            total_income += salary
+            employee_count += 1
+
+        average_income = total_income / employee_count if employee_count else 0
+        print("Сотрудники с окладом менее 20 тыс.:")
+        for employee in low_salary_employees:
+            print(employee)
+        print(f"Средний доход сотрудников: {average_income}")
+except FileNotFoundError:
+    print(f"Файл {filename} не найден.")
+
+"""
+Создать (не программно) текстовый файл со следующим содержимым:
+One — 1
+Two — 2
+Three — 3
+Four — 4
+Необходимо написать программу, открывающую файл на чтение и считывающую построчно данные. При этом английские числительные должны заменяться на русские. Новый блок строк должен записываться в новый текстовый файл.
+"""
+
+# Словарь для перевода английских числительных на русские
+translations = {
+    "One": "Один",
+    "Two": "Два",
+    "Three": "Три",
+    "Four": "Четыре"
+}
+
+source_filename = "numbers_eng.txt"  # Предполагаемое имя исходного файла
+destination_filename = "numbers_ru.txt"  # Имя файла назначения
+
+try:
+    with open(source_filename, 'r') as source_file, open(destination_filename, 'w') as dest_file:
+        for line in source_file:
+            parts = line.split(' — ')
+            if parts[0] in translations:
+                parts[0] = translations[parts[0]]
+            dest_file.write(' — '.join(parts))
+    print(f"Файл '{destination_filename}' успешно создан с русскими числительными.")
+except FileNotFoundError:
+    print(f"Файл {source_filename} не найден.")
+
+
+"""
+5. Создать (программно) текстовый файл, записать в него программно набор чисел, разделенных пробелами. Программа должна подсчитывать сумму чисел в файле и выводить ее на экран.
+"""
+
+# Создание текстового файла и запись в него набора чисел, разделенных пробелами
+filename = "numbers.txt"
+numbers = "1 2 3 4 5 6 7 8 9 10"  # Пример набора чисел
+
+# Запись чисел в файл
+with open(filename, 'w') as file:
+    file.write(numbers)
+
+# Чтение файла и подсчет суммы чисел
+total_sum = 0
+with open(filename, 'r') as file:
+    for line in file:
+        total_sum += sum(map(int, line.split()))
+
+# Вывод суммы
+total_sum
+
+"""
+6. Необходимо создать (не программно) текстовый файл, где каждая строка описывает учебный предмет и наличие лекционных, практических и лабораторных занятий по этому предмету и их количество. Важно, чтобы для каждого предмета не обязательно были все типы занятий. Сформировать словарь, содержащий название предмета и общее количество занятий по нему. Вывести словарь на экран.
+Примеры строк файла:
+Информатика: 100(л) 50(пр) 20(лаб).
+Физика: 30(л) — 10(лаб)
+Физкультура: — 30(пр) —
+Пример словаря:
+{“Информатика”: 170, “Физика”: 40, “Физкультура”: 30}
+"""
+
+
+def parse_subjects_file(filename):
+    subjects_dict = {}
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            for line in file:
+                # Извлечение названия предмета и строки с количеством занятий
+                subject, activities_str = line.split(':')
+                # Извлечение чисел из строки с помощью list comprehension и функции filter
+                hours_list = [int(s.split('(')[0]) for s in activities_str.split() if s.split('(')[0].isdigit()]
+                # Подсчет и сохранение общего количества занятий по предмету
+                subjects_dict[subject] = sum(hours_list)
+    except FileNotFoundError:
+        print(f"Файл {filename} не найден.")
+    except Exception as e:
+        print(f"Ошибка при обработке файла {filename}: {e}")
+
+    return subjects_dict
+
+
+# Путь к файлу
+filename = "your_subjects_file.txt"  # Замените на имя вашего файла
+
+# Парсинг файла и вывод результата
+subjects_dict = parse_subjects_file(filename)
+print(subjects_dict)
+
+"""
+7. Создать (не программно) текстовый файл, в котором каждая строка должна содержать данные о фирме: название, форма собственности, выручка, издержки.
+Пример строки файла: firm_1 ООО 10000 5000.
+Необходимо построчно прочитать файл, вычислить прибыль каждой компании, а также среднюю прибыль. Если фирма получила убытки, в расчет средней прибыли ее не включать.
+Далее реализовать список. Он должен содержать словарь с фирмами и их прибылями, а также словарь со средней прибылью. Если фирма получила убытки, также добавить ее в словарь (со значением убытков).
+Пример списка: [{“firm_1”: 5000, “firm_2”: 3000, “firm_3”: 1000}, {“average_profit”: 2000}].
+Итоговый список сохранить в виде json-объекта в соответствующий файл.
+Пример json-объекта:
+[{"firm_1": 5000, "firm_2": 3000, "firm_3": 1000}, {"average_profit": 2000}]
+Подсказка: использовать менеджеры контекста.
+"""
+
+import json
+
+# Предполагаем, что файл уже создан и называется "companies.txt"
+# В этом примере кода мы имитируем чтение из файла для демонстрации
+
+# Имитация чтения файла
+file_content = [
+    "firm_1 ООО 10000 5000",
+    "firm_2 ОАО 8000 7000",
+    "firm_3 ЗАО 15000 10000",
+    "firm_4 ИП 4000 5000"
+]
+
+# Разбор данных и вычисление прибыли
+companies_profit = {}
+profits = []
+
+for line in file_content:
+    name, ownership, revenue, costs = line.split()
+    profit = int(revenue) - int(costs)
+    companies_profit[name] = profit
+    if profit > 0:
+        profits.append(profit)
+
+# Вычисление средней прибыли
+average_profit = sum(profits) / len(profits) if profits else 0
+
+# Формирование итогового списка
+result_list = [companies_profit, {"average_profit": average_profit}]
+
+# Сохранение в JSON-файл
+with open('companies_profit.json', 'w', encoding='utf-8') as json_file:
+    json.dump(result_list, json_file, ensure_ascii=False, indent=4)
+
+result_list
+
